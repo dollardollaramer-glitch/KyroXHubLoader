@@ -1,0 +1,113 @@
+-- Gui setup
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Player = Players.LocalPlayer
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "KyroXChecker"
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Name = "MainFrame"
+Frame.Size = UDim2.new(0, 300, 0, 200)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BorderSizePixel = 0
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.Parent = ScreenGui
+Frame.ClipsDescendants = true
+Frame.Size = UDim2.new(0, 0, 0, 0) -- start small for animation
+
+-- Animate opening
+local openTween = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 300, 0, 200)})
+openTween:Play()
+
+-- Make frame draggable
+local UserInputService = game:GetService("UserInputService")
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Image
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Size = UDim2.new(0, 100, 0, 100)
+ImageLabel.Position = UDim2.new(0.5, -50, 0, 20)
+ImageLabel.Image = "rbxassetid://137049923786344"
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.Parent = Frame
+
+-- Compatibility Text
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Size = UDim2.new(1, -20, 0, 50)
+TextLabel.Position = UDim2.new(0, 10, 0, 130)
+TextLabel.BackgroundTransparency = 1
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextScaled = true
+TextLabel.Text = "Checking compatibility with KyroX Hub..."
+TextLabel.Parent = Frame
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.Parent = Frame
+
+-- Close button animation and loadstring execution
+CloseButton.MouseButton1Click:Connect(function()
+    -- Animate shrinking
+    local closeTween = TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
+    closeTween:Play()
+    closeTween.Completed:Connect(function()
+        Frame:Destroy()
+        -- Execute KyroX Hub loadstring after closing
+        loadstring(game:HttpGet("https://github.com/dollardollaramer-glitch/KyroXHub-Beta/raw/refs/heads/main/KyroXhub%20RAW", true))()
+    end)
+end)
+
+-- Fake KyroX Hub check (you can replace this logic)
+local function checkKyroX()
+    wait(0.5) -- simulate delay
+    local success = true -- change this based on your detection logic
+    if success then
+        TextLabel.Text = "KyroX Hub Compatibility: High ✅"
+    else
+        TextLabel.Text = "KyroX Hub Compatibility: Low ❌"
+    end
+end
+
+checkKyroX()
