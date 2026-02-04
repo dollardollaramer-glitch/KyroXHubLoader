@@ -64,7 +64,7 @@ end)
 local ImageLabel = Instance.new("ImageLabel")
 ImageLabel.Size = UDim2.new(0, 100, 0, 100)
 ImageLabel.Position = UDim2.new(0.5, -50, 0, 20)
-ImageLabel.Image = "rbxassetid://137049923786344"
+ImageLabel.Image = "rbxassetid://90239247275771"
 ImageLabel.BackgroundTransparency = 1
 ImageLabel.Parent = Frame
 
